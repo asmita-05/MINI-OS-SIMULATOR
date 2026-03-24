@@ -1,0 +1,61 @@
+# ─────────────────────────────────────────────────────────────────────────────
+#  demo_filesystem.ossim
+#  Virtual File System demonstration.
+#  Run with:  run scripts/demo_filesystem.ossim
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Build a project directory tree ───────────────────────────────────────────
+mkdir /project
+mkdir /project/src
+mkdir /project/src/main
+mkdir /project/src/test
+mkdir /project/docs
+
+# Create source files
+touch /project/src/main/Main.java
+write /project/src/main/Main.java public class Main { public static void main(String[] args) {} }
+
+touch /project/src/main/Scheduler.java
+write /project/src/main/Scheduler.java public interface Scheduler { void schedule(); }
+
+touch /project/src/test/SchedulerTest.java
+write /project/src/test/SchedulerTest.java // JUnit tests for Scheduler
+
+# Create documentation
+touch /project/docs/README.md
+write /project/docs/README.md # Mini OS Simulator\nA pedagogical OS simulation.
+append /project/docs/README.md \n\n## Features\n- Process Scheduling\n- Memory Management
+
+# ── Navigate and inspect ──────────────────────────────────────────────────────
+pwd
+cd /project
+tree /project
+
+ls /project/src/main
+cat /project/src/main/Main.java
+cat /project/docs/README.md
+
+# ── File operations ──────────────────────────────────────────────────────────
+# Copy via write+cat simulation
+touch /project/docs/CHANGELOG.md
+write /project/docs/CHANGELOG.md v1.0 - Initial release
+
+# Rename a file
+mv /project/src/test/SchedulerTest.java /project/src/test/AllTests.java
+ls /project/src/test
+
+# Search across the whole tree
+find .java
+find README
+
+# ── Working directory navigation ─────────────────────────────────────────────
+cd /project/src
+pwd
+ls
+cd main
+pwd
+ls
+cat Main.java
+cd /
+pwd
+tree /project

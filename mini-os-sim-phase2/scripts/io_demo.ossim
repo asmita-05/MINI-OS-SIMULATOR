@@ -1,0 +1,19 @@
+# ─────────────────────────────────────────────────────────────────────────────
+#  I/O Simulation Demo
+#  Demonstrates the I/O-Aware Round Robin scheduler
+# ─────────────────────────────────────────────────────────────────────────────
+
+proc add P1 0 20 0
+proc add P2 0 15 0
+proc add P3 2  8 0
+
+proc list
+
+# I/O-Aware RR: processes P1 and P2 will block for I/O mid-burst
+# (I/O events are configured programmatically; this script shows
+#  standard output from the io-rr scheduler applied to the workload)
+sched set io-rr 4
+sched run
+
+# Compare io-rr vs plain rr on the same workload
+compare rr io-rr --quantum 4

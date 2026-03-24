@@ -1,0 +1,69 @@
+# ─────────────────────────────────────────────────────────────────────────────
+#  demo_memory.ossim
+#  Memory management demonstration — contiguous and paging modes.
+#  Run with:  run scripts/demo_memory.ossim
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── Part A: Contiguous allocation strategies ─────────────────────────────────
+
+# First-Fit
+mem init 512 first-fit
+mem alloc 1 Alpha  128
+mem alloc 2 Beta    64
+mem alloc 3 Gamma  200
+mem map
+
+# Free the middle block and observe fragmentation
+mem free 2
+mem map
+
+# Allocate a smaller block — first-fit fills the first hole
+mem alloc 4 Delta   32
+mem map
+
+mem info
+
+# Best-Fit comparison
+mem init 512 best-fit
+mem alloc 10 A 100
+mem alloc 11 B 200
+mem alloc 12 C 100
+mem free 10
+mem free 11
+mem map
+# Now allocate 80 units — best-fit picks the 100-unit hole, not the 200-unit
+mem alloc 20 New 80
+mem map
+
+# Worst-Fit
+mem init 512 worst-fit
+mem alloc 30 X 100
+mem alloc 31 Y 200
+mem free 30
+# Worst-fit should prefer the larger free region
+mem alloc 32 Z 60
+mem map
+
+# ── Part B: Paging ────────────────────────────────────────────────────────────
+
+page init 256 64
+# 256 total / 64 per page = 4 frames
+page frames
+
+# Allocate two processes
+mem alloc 1 ProcA 128
+mem alloc 2 ProcB  64
+page frames
+
+# Show page tables
+page table 1
+page table 2
+
+# Address translation
+page translate 1 0
+page translate 1 70
+page translate 2 10
+
+# Free P1 and show reclaimed frames
+mem free 1
+page frames

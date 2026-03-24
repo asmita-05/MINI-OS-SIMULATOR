@@ -1,0 +1,67 @@
+# ─────────────────────────────────────────────────────────────────────────────
+#  Mini OS Simulator — Demo Batch Script
+#  Run with:  run scripts/demo.ossim
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── 1. System status ──────────────────────────────────────────────────────────
+status
+
+# ── 2. Create a classic textbook workload ─────────────────────────────────────
+proc add Alpha    0 10 3
+proc add Beta     1  4 1
+proc add Gamma    2  6 4
+proc add Delta    3  8 2
+proc add Epsilon  4  2 5
+
+proc list
+
+# ── 3. Compare all scheduling algorithms side-by-side ─────────────────────────
+compare --quantum 3
+
+# ── 4. Run Round Robin with quantum=3 and show full detail ────────────────────
+sched set rr 3
+sched run
+
+# ── 5. Memory management demo ─────────────────────────────────────────────────
+mem init 512 best-fit
+mem info
+
+mem alloc 1 Alpha   96
+mem alloc 2 Beta    48
+mem alloc 3 Gamma   80
+mem alloc 4 Delta   64
+mem map
+
+# Free the middle two — triggers coalescing
+mem free 2
+mem free 3
+mem map
+
+# Re-allocate into the coalesced hole
+mem alloc 5 NewProc 120
+mem map
+
+# ── 6. Paging memory demo ──────────────────────────────────────────────────────
+page init 512 64
+mem alloc 10 ProcA 128
+mem alloc 11 ProcB  64
+page table 10
+page translate 10 0
+page translate 10 65
+page frames
+
+# ── 7. Virtual file system demo ───────────────────────────────────────────────
+mkdir /workspace
+mkdir /workspace/src
+mkdir /workspace/docs
+touch /workspace/src/Main.java
+write /workspace/src/Main.java public class Main { public static void main(String[] a) {} }
+touch /workspace/docs/README.md
+write /workspace/docs/README.md # Mini OS Simulator
+cat /workspace/src/Main.java
+ls /workspace
+tree /workspace
+find Main
+
+# ── 8. Final status ───────────────────────────────────────────────────────────
+status

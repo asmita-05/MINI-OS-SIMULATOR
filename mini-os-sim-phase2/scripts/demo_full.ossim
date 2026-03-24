@@ -1,0 +1,67 @@
+# ─────────────────────────────────────────────────────────────────────────────
+#  demo_full.ossim — Complete end-to-end walkthrough.
+#  Covers every subsystem in a realistic "OS boot and workload" narrative.
+#  Run with:  run scripts/demo_full.ossim
+# ─────────────────────────────────────────────────────────────────────────────
+
+# ── 1. System boot: configure memory ─────────────────────────────────────────
+mem init 1024 best-fit
+mem info
+mem auto on 96
+
+# ── 2. Spawn processes (memory auto-allocated) ───────────────────────────────
+proc add init      0  3 0
+proc add kernel    0  8 0
+proc add syslogd   1  5 2
+proc add httpd     2 12 3
+proc add worker1   3  7 4
+proc add worker2   3  6 4
+proc add worker3   4  5 4
+proc add batchjob  5 20 9
+
+proc list
+mem map
+
+# ── 3. Compare all scheduling algorithms ─────────────────────────────────────
+compare --quantum 4
+
+# ── 4. Deep-dive: Round Robin (most realistic for interactive workload) ───────
+sched set rr 4
+sched run
+
+# ── 5. Deep-dive: Multilevel Queue ───────────────────────────────────────────
+sched set mlq
+sched run
+
+# ── 6. Priority preemptive (kernel tasks jump the queue) ─────────────────────
+sched set priority-p
+sched run
+
+# ── 7. Memory lifecycle ───────────────────────────────────────────────────────
+# Simulate process completion — free their memory
+mem free 1
+mem free 2
+mem map
+
+# Allocate a new large task
+mem alloc 99 database 256
+mem map
+mem info
+
+# ── 8. Virtual filesystem: write logs ────────────────────────────────────────
+mkdir /var
+mkdir /var/log
+mkdir /var/run
+write /var/log/syslog [BOOT] System started
+append /var/log/syslog \n[INFO] 8 processes spawned
+append /var/log/syslog \n[INFO] Memory: 1024 units, best-fit
+append /var/log/syslog \n[INFO] Scheduler: RR Q=4, MLQ, Priority-P tested
+
+touch /var/run/httpd.pid
+write /var/run/httpd.pid 4
+
+cat /var/log/syslog
+tree /var
+
+# ── 9. Final system status ────────────────────────────────────────────────────
+status
